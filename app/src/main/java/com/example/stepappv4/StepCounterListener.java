@@ -31,18 +31,18 @@ public class  StepCounterListener implements SensorEventListener {
     private  Context context;
     //TODO 13: Declare the TextView in the listener class
     TextView stepCountsView;
-    ProgressBar progressView;
+    CircularProgressIndicator progressBar;
     //TODO 16 (Your Turn): Declare the CircularProgressIndicator in the listener class
 
     //TODO 14: Pass the TextView to the listener class using the constructor
     //TODO 17 (Your Turn): Add the CircularProgressIndicator as a paramter in the constructor
 
-    public StepCounterListener(Context context, TextView stepCountsView, ProgressBar progressView)
+    public StepCounterListener(Context context, TextView stepCountsView, CircularProgressIndicator progressBar)
     {
         this.stepCountsView = stepCountsView;
         this.context = context;
-        this.progressView = progressView;
         //TODO 18 (Your Turn): Assign the CircularProgressIndicator variable
+        this.progressBar = progressBar;
 
     }
 
@@ -93,6 +93,9 @@ public class  StepCounterListener implements SensorEventListener {
                 // TODO (Assignment 02): Use the STEP_DETECTOR  to count the number of steps
                 // TODO (Assignment 02): The STEP_DETECTOR is triggered every time a step is detected
                 // TODO (Assignment 02): The sensorEvent.values of STEP_DETECTOR has only one value for the detected step count
+                countSteps(sensorEvent.values[0]);
+
+                Log.d("Step detection", "Step detected");
 
         }
     }
@@ -128,10 +131,10 @@ public class  StepCounterListener implements SensorEventListener {
                 stepCountsView.setText(String.valueOf(accStepCounter));
 
                 //TODO 17: Add the new steps to the database
-                saveStepInDatabase();
+//                saveStepInDatabase();
 
                 //TODO 19 (Your Turn): Set the progress of the CircularProgressIndicator variable
-                progressView.setProgress(accStepCounter);
+//                progressBar.setProgress(accStepCounter);
 
 
 
@@ -141,7 +144,11 @@ public class  StepCounterListener implements SensorEventListener {
 
     private void countSteps(float step)
     {
-
+        Integer stepCounter = Integer.valueOf(String.valueOf(stepCountsView.getText()));
+        stepCounter += 1;
+        saveStepInDatabase();
+        stepCountsView.setText((String.valueOf(stepCounter)));
+        progressBar.setProgress(stepCounter);
     }
     private void saveStepInDatabase()
     {

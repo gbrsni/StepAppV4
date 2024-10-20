@@ -48,6 +48,16 @@ public class StepsFragment extends Fragment {
         binding = FragmentStepsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        // Load today's steps (copied from saveStepInDatabase())
+        //get current Timestamp
+        long timeInMillis = System.currentTimeMillis();
+        // Convert the timestamp to yyyy-MM-dd HH:mm:ss:SSS format
+        SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+        jdf.setTimeZone(TimeZone.getTimeZone("GMT+2"));
+        final String dateTimestamp = jdf.format(timeInMillis);
+        String currentDay = dateTimestamp.substring(0,10);
+        stepsCounter = StepAppOpenHelper.loadSingleRecord(this.getContext(), currentDay);
+
         CircularProgressIndicator progressBar = (CircularProgressIndicator)  root.findViewById(R.id.progressBar);
         progressBar.setMax(100);
         progressBar.setProgress(stepsCounter);
@@ -55,12 +65,11 @@ public class StepsFragment extends Fragment {
         stepsTextView = (TextView) root.findViewById(R.id.stepsCount_textview);
         stepsTextView.setText(""+stepsCounter);
 
-        progressView = (ProgressBar) root.findViewById(R.id.progressBar);
-
         // TODO 3: Get an instance of sensor manager
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         // TODO 4: Assign ACC. sensor
-        accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+//        accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        accSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
 
         // Toggle group button
@@ -76,7 +85,7 @@ public class StepsFragment extends Fragment {
                     {
                         //TODO 20 (Your Turn): Pass the progress to the constructor of the listener class
 
-                        sensorListener = new StepCounterListener(getContext(), stepsTextView, progressView);
+                        sensorListener = new StepCounterListener(getContext(), stepsTextView, progressBar);
 
                         sensorManager.registerListener(sensorListener, accSensor, SensorManager.SENSOR_DELAY_NORMAL);
                         Toast.makeText(getContext(), R.string.start_text, Toast.LENGTH_LONG).show();
